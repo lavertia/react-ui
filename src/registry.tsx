@@ -1,7 +1,15 @@
 import { createContext, useContext } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { isUiKitId } from '@lavertia/ui';
-import type { ComponentNode } from '@lavertia/ui';
+import type { ComponentNode, LavertiaPayload } from '@lavertia/ui';
+
+/** The selected UI Kit may replace the entire Page shell and navigation. */
+export interface UiShellProps {
+    lavertia: LavertiaPayload;
+    children: ReactNode;
+}
+
+export type UiShell = ComponentType<UiShellProps>;
 
 export interface UiComponentProps {
     node: ComponentNode;
@@ -13,12 +21,14 @@ export type UiComponent = ComponentType<UiComponentProps>;
 export interface UiKitDefinition {
     id: string;
     components: Readonly<Record<string, UiComponent>>;
+    shell?: UiShell;
     /** Explicitly fall back to Lavertia's built-in renderer or fail on a missing component. */
     fallback: 'default' | 'error';
 }
 
 interface RegisteredKit {
     components: Map<string, UiComponent>;
+    shell?: UiShell;
     fallback: 'default' | 'error';
 }
 
@@ -60,7 +70,7 @@ export class UiRegistry {
             throw new Error('Invalid fallback policy for UI Kit: ' + kit.id);
         }
 
-        this.kits.set(kit.id, { components, fallback: kit.fallback });
+        this.kits.set(kit.id, { components, shell: kit.shell, fallback: kit.fallback });
         return this;
     }
 
@@ -82,6 +92,14 @@ export class UiRegistry {
         }
         this.overrides.set(type, renderer);
         return this;
+    }
+
+    resolveShell(kitId = 'default'): UiShell | undefined {
+        const kit = this.kits.get(kitId);
+        if (!kit) {
+            throw new Error('Lavertia UI Kit "' + kitId + '" is not registered.');
+        }
+        return kit.shell;
     }
 
     hasKit(id: string): boolean {

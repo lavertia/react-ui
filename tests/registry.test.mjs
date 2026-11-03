@@ -38,3 +38,13 @@ test('invalid kits, collisions and missing kits fail before rendering', () => {
     assert.throws(() => registry.registerKit({ id: 'test', components: { 'bad/type': custom }, fallback: 'default' }), /Invalid Lavertia component/);
     assert.throws(() => registry.register('vendor.forms.rating', custom), /Invalid Lavertia component/);
 });
+
+test('a UI Kit can supply an independent Page shell', () => {
+    const shell = () => null;
+    const registry = createUiRegistry().registerKit({
+        id: 'marketing', shell, components: {}, fallback: 'default',
+    });
+    assert.equal(registry.resolveShell('marketing'), shell);
+    assert.equal(registry.resolveShell('default'), undefined);
+    assert.throws(() => registry.resolveShell('unknown'), /not registered/);
+});
