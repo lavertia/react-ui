@@ -1,19 +1,22 @@
 import { Head, Link } from '@inertiajs/react';
 import type { CSSProperties } from 'react';
-import { themeVariables } from '@lavertia/ui';
+import { activeUiKitId, themeVariables } from '@lavertia/ui';
 import '@lavertia/ui/theme.css';
 import LavertiaRenderer from './renderer.js';
+import { defaultUiRegistry, UiRegistryProvider } from './registry.js';
+import type { UiRegistry } from './registry.js';
 import type { LavertiaPayload } from '@lavertia/ui';
 
-export default function LavertiaPage({ lavertia }: { lavertia: LavertiaPayload }) {
+export default function LavertiaPage({ lavertia, registry = defaultUiRegistry }: { lavertia: LavertiaPayload; registry?: UiRegistry }) {
     if (lavertia.version !== 1) {
         return <p role="alert" className="p-6 text-sm text-rose-700">Unsupported Lavertia protocol version.</p>;
     }
 
     const navigation = lavertia.navigation ?? [];
+    const kitId = activeUiKitId(lavertia.uiKit);
 
     return (
-        <>
+        <UiRegistryProvider registry={registry} kitId={kitId}>
             <Head title={lavertia.title ?? 'Lavertia'} />
             <main lang={lavertia.locale ?? 'en'} dir={lavertia.direction ?? 'ltr'} style={themeVariables(lavertia.theme) as CSSProperties} className="lvt-root min-h-[calc(100vh-8rem)] bg-gray-50/70 px-4 py-6 sm:px-6 lg:px-8 dark:bg-gray-950/40">
                 <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 lg:flex-row">
@@ -46,6 +49,6 @@ export default function LavertiaPage({ lavertia }: { lavertia: LavertiaPayload }
                     </div>
                 </div>
             </main>
-        </>
+        </UiRegistryProvider>
     );
 }

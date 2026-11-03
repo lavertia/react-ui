@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { Link, router } from '@inertiajs/react';
+import { useUiRegistry } from './registry.js';
 import type { ComponentNode, TableColumn, TableRow } from '@lavertia/ui';
 import {
     badgeClass,
@@ -281,6 +282,7 @@ function ActionLink({ node }: { node: ComponentNode }) {
 }
 
 export default function LavertiaRenderer({ node }: { node: ComponentNode }) {
+    const { registry, kitId } = useUiRegistry();
     const [input, setInput] = useState(String(node.props.value ?? ''));
     const [checked, setChecked] = useState(node.props.checked === true);
 
@@ -289,6 +291,11 @@ export default function LavertiaRenderer({ node }: { node: ComponentNode }) {
     }, [node.props.value]);
 
     const children = node.components.map((child) => <LavertiaRenderer key={child.key} node={child} />);
+
+    const CustomRenderer = registry.resolve(node.type, kitId);
+    if (CustomRenderer) {
+        return <CustomRenderer node={node}>{children}</CustomRenderer>;
+    }
 
     switch (node.type) {
         case 'container':
