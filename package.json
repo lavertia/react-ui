@@ -20,6 +20,10 @@
     "./form-submission": {
       "types": "./dist/components/forms/use-form-submission.d.ts",
       "import": "./dist/components/forms/use-form-submission.js"
+    },
+    "./table-state": {
+      "types": "./dist/components/tables/use-table-state.d.ts",
+      "import": "./dist/components/tables/use-table-state.js"
     }
   },
   "files": [

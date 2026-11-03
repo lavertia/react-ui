@@ -10,3 +10,4 @@ export { ActionLink } from './components/actions/action-link.js';
 export { BasicFieldRenderer } from './components/fields/basic-fields.js';
 export type { UiShell, UiShellProps } from './registry.js';
 export { useFormSubmission } from './components/forms/use-form-submission.js';
+export { useTableState } from './components/tables/use-table-state.js';
