@@ -52,3 +52,18 @@ test('standalone Pages use the default shell without requiring navigation', () =
     assert.match(markup, /dir="rtl"/);
     assert.doesNotMatch(markup, /Panel navigation/);
 });
+
+test('Form renderer retains named inputs and visible pending/validation semantics', () => {
+    const markup = renderToStaticMarkup(createElement(LavertiaRenderer, {
+        node: {
+            type: 'form', key: 'root/form', props: { label: 'Edit member', action: '/members', method: 'patch' },
+            components: [
+                { type: 'text-input', key: 'root/form/name', props: { name: 'name', label: 'Name', value: 'Lina' }, components: [] },
+            ],
+        },
+    }));
+    assert.match(markup, /<form/);
+    assert.match(markup, /name="name"/);
+    assert.match(markup, /type="submit"/);
+    assert.match(markup, /Edit member/);
+});

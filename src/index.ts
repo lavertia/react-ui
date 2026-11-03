@@ -9,3 +9,4 @@ export { TablePreview } from './components/tables/table-preview.js';
 export { ActionLink } from './components/actions/action-link.js';
 export { BasicFieldRenderer } from './components/fields/basic-fields.js';
 export type { UiShell, UiShellProps } from './registry.js';
+export { useFormSubmission } from './components/forms/use-form-submission.js';

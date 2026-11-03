@@ -1,41 +1,11 @@
-import { useState } from 'react';
-import type { FormEvent, ReactNode } from 'react';
-import { router } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 import { translate } from '@lavertia/ui';
 import type { ComponentNode } from '@lavertia/ui';
+import { useFormSubmission } from './use-form-submission.js';
 
 export function FormRenderer({ node, children }: { node: ComponentNode; children: ReactNode }) {
-    const [processing, setProcessing] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [saved, setSaved] = useState(false);
-    const action = typeof node.props.action === 'string'
-        && node.props.action.startsWith('/') && !node.props.action.startsWith('//')
-        ? node.props.action : null;
-    const method: 'post' | 'put' | 'patch' =
-        node.props.method === 'put' || node.props.method === 'patch' ? node.props.method : 'post';
+    const { action, submit, errors, saved, processing } = useFormSubmission(node);
     const tx = (key: Parameters<typeof translate>[1]) => translate(node.props.locale, key);
-
-    function submit(event: FormEvent<HTMLFormElement>): void {
-        event.preventDefault();
-        if (!action || processing) return;
-
-        const data: Record<string, string> = {};
-        for (const [name, value] of new FormData(event.currentTarget).entries()) {
-            if (typeof value === 'string') data[name] = value;
-        }
-
-        setSaved(false);
-        setErrors({});
-        setProcessing(true);
-        router.visit(action, {
-            method,
-            data,
-            preserveScroll: true,
-            onSuccess: () => setSaved(true),
-            onError: (validationErrors) => setErrors(validationErrors),
-            onFinish: () => setProcessing(false),
-        });
-    }
 
     return <form method="post" action={action ?? undefined} onSubmit={submit}
         className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-gray-900/70">
