@@ -24,6 +24,10 @@
     "./table-state": {
       "types": "./dist/components/tables/use-table-state.d.ts",
       "import": "./dist/components/tables/use-table-state.js"
+    },
+    "./registry": {
+      "types": "./dist/registry.d.ts",
+      "import": "./dist/registry.js"
     }
   },
   "files": [
