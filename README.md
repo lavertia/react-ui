@@ -45,5 +45,18 @@ The imported `@/components/lavertia` components are **application-owned examples
 
 Resolution priority: application-wide `override()` → selected kit components → custom `register(vendor.component)` → built-in renderer if the kit declares `fallback: default`. `fallback: error` rejects missing component types. `register()` refuses built-in names (use `override()` for those); avoid passing callbacks through Inertia props.
 
+A kit may also provide a full Page shell:
+
+```tsx
+registerKit({
+    id: 'marketing',
+    shell: MarketingShell,
+    components: { 'text-input': MarketingInput },
+    fallback: 'default',
+});
+```
+
+The default shell is exported as `DefaultPageShell`, and stable default renderers are exported as `FormRenderer`, `TablePreview`, `BasicFieldRenderer` and `ActionLink`. These are owned by `@lavertia/react-ui`, not copied into host applications. Page shell switching is kit-scoped; no app-specific CSS/build is loaded dynamically from server IDs.
+
 The registry is application-scoped and should be built once at module scope. Future work includes per-scope registries, Vue/Svelte parity, component manifest checks, a clean default shadcn kit and splitting the monolithic fallback renderer. Never edit `playground` as an upstream UI source.
 
