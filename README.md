@@ -18,6 +18,32 @@ The framework Page imports `@lavertia/ui/theme.css` and consumes the server-prov
 
 Configure the PHP theme on the Panel by registering `\Lavertia\ThemeDefault\ClassicTheme::class` in `config/lavertia.php` once the Composer `lavertia/theme-default` package is installed.
 
-## UI customization
+## Custom UI Kits, plugin components and local overrides
 
-Edit `src/renderer.tsx` for component behavior or styling and `src/page.tsx` for the shell. Never edit `playground` as an upstream UI source. Code should eventually be split into component files by feature once the adapter extraction is stable.
+`@lavertia/react-ui` now exports `createUiRegistry` and accepts a `registry` prop on `LavertiaPage`. **You do not need to fork the renderer to customize a field or shell.** Each kit can implement some or all component types; declare its fallback explicitly (`default` or `error`). The built-in renderer remains selected by `lavertia.uiKit.id = default`.
+
+```tsx
+import { LavertiaPage, createUiRegistry } from '@lavertia/react-ui';
+import type { LavertiaPayload } from '@lavertia/ui';
+import { CardRenderer, RatingRenderer, ShadcnInputRenderer } from '@/components/lavertia';
+
+const registry = createUiRegistry()
+    .registerKit({
+        id: 'shadcn',
+        components: { 'text-input': ShadcnInputRenderer },
+        fallback: 'default',
+    })
+    .register('app.rating-input', RatingRenderer)
+    .override('card', CardRenderer);
+
+export default function Page({ lavertia }: { lavertia: LavertiaPayload }) {
+    return <LavertiaPage lavertia={lavertia} registry={registry} />;
+}
+```
+
+The imported `@/components/lavertia` components are **application-owned examples**, not shipped modules. Replace the generated `resources/js/pages/lavertia/page.tsx` shim with this host wrapper (do not rerun the installer with `--force` over a customized file). The configured PHP Kit ID must exactly match a registered ID; unregistered kits fail with an actionable error. This does not automatically install shadcn/UI components or provide a complete shadcn kit yet.
+
+Resolution priority: application-wide `override()` → selected kit components → custom `register(vendor.component)` → built-in renderer if the kit declares `fallback: default`. `fallback: error` rejects missing component types. `register()` refuses built-in names (use `override()` for those); avoid passing callbacks through Inertia props.
+
+The registry is application-scoped and should be built once at module scope. Future work includes per-scope registries, Vue/Svelte parity, component manifest checks, a clean default shadcn kit and splitting the monolithic fallback renderer. Never edit `playground` as an upstream UI source.
+
