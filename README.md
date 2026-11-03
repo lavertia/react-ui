@@ -1,6 +1,6 @@
 # @lavertia/react-ui
 
-Production React renderer of Lavertia component protocol v1. This repo owns **all React UI rendering**, including Forms, Tables, Actions, Infolists, layouts and dashboard widgets. The playground is only a demo consumer.
+Production **default** React renderer of Lavertia component protocol v1, plus shared React UI state/registry contracts. This repo owns fallback rendering for Forms, Tables, Actions, layouts and dashboard widgets; optional UI Kits such as [lavertia/ui-shadcn](https://github.com/lavertia/ui-shadcn) own their own markup. The playground remains a demo consumer.
 
 The shared `@lavertia/ui` package owns protocol types, table helpers and theme token validation. `lavertia/panels` owns PHP components, Eloquent/authorization, and optional installer shims, **not UI markup**.
 
@@ -41,7 +41,7 @@ export default function Page({ lavertia }: { lavertia: LavertiaPayload }) {
 }
 ```
 
-The imported `@/components/lavertia` components are **application-owned examples**, not shipped modules. Replace the generated `resources/js/pages/lavertia/page.tsx` shim with this host wrapper (do not rerun the installer with `--force` over a customized file). The configured PHP Kit ID must exactly match a registered ID; unregistered kits fail with an actionable error. This does not automatically install shadcn/UI components or provide a complete shadcn kit yet.
+The imported `@/components/lavertia` components are **application-owned examples**, not shipped modules. Replace the generated `resources/js/pages/lavertia/page.tsx` shim with this host wrapper (do not rerun the installer with `--force` over a customized file). The configured PHP Kit ID must exactly match a registered ID; unregistered kits fail with an actionable error. The official experimental Shadcn Kit is maintained at [lavertia/ui-shadcn](https://github.com/lavertia/ui-shadcn); it is installed separately from this runtime.
 
 Resolution priority: application-wide `override()` → selected kit components → custom `register(vendor.component)` → built-in renderer if the kit declares `fallback: default`. `fallback: error` rejects missing component types. `register()` refuses built-in names (use `override()` for those); avoid passing callbacks through Inertia props.
 
@@ -58,5 +58,9 @@ registerKit({
 
 The default shell is exported as `DefaultPageShell`, and stable default renderers are exported as `FormRenderer`, `TablePreview`, `BasicFieldRenderer` and `ActionLink`. These are owned by `@lavertia/react-ui`, not copied into host applications. Page shell switching is kit-scoped; no app-specific CSS/build is loaded dynamically from server IDs.
 
-The registry is application-scoped and should be built once at module scope. Future work includes per-scope registries, Vue/Svelte parity, component manifest checks, a clean default shadcn kit and splitting the monolithic fallback renderer. Never edit `playground` as an upstream UI source.
+The registry is application-scoped and should be built once at module scope. Future work includes per-scope registries, Vue/Svelte parity and component manifest checks. The default renderer is already split into feature modules. UI Kit repos evolve independently. Never edit `playground` as an upstream UI source.
 
+
+## UI Kit ownership
+
+Shadcn's canonical code, tests and CI migrated from the former `packages/ui-shadcn/` staging directory into [lavertia/ui-shadcn](https://github.com/lavertia/ui-shadcn) (PR #1). This runtime exports CSS-free `@lavertia/react-ui/form-submission` and `@lavertia/react-ui/table-state` for external UI Kits; it does **not** depend on Shadcn.
