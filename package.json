@@ -1,0 +1,47 @@
+{
+  "name": "@lavertia/react-ui",
+  "version": "0.1.0-alpha.1",
+  "description": "React UI components for Lavertia",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./page": {
+      "types": "./dist/page.d.ts",
+      "import": "./dist/page.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run typecheck"
+  },
+  "dependencies": {
+    "@lavertia/ui": "github:lavertia/ui#main"
+  },
+  "peerDependencies": {
+    "@inertiajs/react": "^3.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@inertiajs/react": "^3.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0"
+  }
+}
