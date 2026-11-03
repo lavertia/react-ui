@@ -16,6 +16,10 @@
     "./renderer": {
       "types": "./dist/renderer.d.ts",
       "import": "./dist/renderer.js"
+    },
+    "./form-submission": {
+      "types": "./dist/components/forms/use-form-submission.d.ts",
+      "import": "./dist/components/forms/use-form-submission.js"
     }
   },
   "files": [
