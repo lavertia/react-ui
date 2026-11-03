@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { LavertiaRenderer, createUiRegistry, UiRegistryProvider, DefaultPageShell } from '../dist/index.js';
+// Import renderers without loading the CSS-only Page entry (Node's SSR tests have no CSS loader).
+import LavertiaRenderer from '../dist/renderer.js';
+import { createUiRegistry, UiRegistryProvider } from '../dist/registry.js';
+import { DefaultPageShell } from '../dist/shells/default-page-shell.js';
 
 const text = (key, content) => ({ type: 'text', key, props: { content }, components: [] });
 const tree = (type, key, children = []) => ({ type, key, props: {}, components: children });
