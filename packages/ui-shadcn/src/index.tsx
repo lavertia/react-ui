@@ -1,56 +1,17 @@
-import { useEffect, useState } from 'react';
-import type { CSSProperties, ComponentType, HTMLAttributes, InputHTMLAttributes, LabelHTMLAttributes, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import { Link } from '@inertiajs/react';
 import { themeVariables } from '@lavertia/ui';
-import type { UiComponentProps, UiKitDefinition, UiShellProps } from '@lavertia/react-ui';
+import type { UiKitDefinition, UiComponentProps, UiShellProps } from '@lavertia/react-ui';
+import type { ShadcnPrimitives } from './primitives.js';
+import { createShadcnFields } from './fields.js';
+import { createShadcnForm } from './form.js';
+import { createShadcnAction } from './action.js';
 
-/**
- * Supply actual open-code shadcn primitives from your Laravel application.
- * The UI Kit does not bundle/fork shadcn components or import host "@/..." aliases.
- * That keeps ownership of primitives with the application, including RTL/styles.
- */
-export interface ShadcnPrimitives {
-    Input: ComponentType<InputHTMLAttributes<HTMLInputElement>>;
-    Label: ComponentType<LabelHTMLAttributes<HTMLLabelElement>>;
-    Card: ComponentType<HTMLAttributes<HTMLDivElement>>;
-    CardContent: ComponentType<HTMLAttributes<HTMLDivElement>>;
-}
+export type { ShadcnPrimitives, ShadcnSelectControlProps, ShadcnCheckboxProps } from './primitives.js';
 
-/** A small but real vertical slice: Page Shell, Card and Text Input. */
+/** Progressive shadcn UI Kit that never modifies the PHP component protocol. */
 export function createShadcnKit(primitives: ShadcnPrimitives): UiKitDefinition {
-    const { Input, Label, Card, CardContent } = primitives;
-
-    function ShadcnTextInput({ node }: UiComponentProps) {
-        const [value, setValue] = useState(String(node.props.value ?? ''));
-
-        useEffect(() => {
-            setValue(String(node.props.value ?? ''));
-        }, [node.props.value]);
-
-        const label = String(node.props.label ?? node.props.name ?? '');
-        const help = typeof node.props.helperText === 'string' ? node.props.helperText : '';
-        const name = String(node.props.name ?? '');
-
-        return (
-            <div className="grid min-w-0 gap-2">
-                <Label htmlFor={node.key} className="text-sm font-medium">
-                    {label}{node.props.required === true ? <span aria-hidden="true"> *</span> : null}
-                </Label>
-                <Input
-                    id={node.key}
-                    name={name}
-                    type="text"
-                    required={node.props.required === true}
-                    disabled={node.props.disabled === true}
-                    value={value}
-                    placeholder={String(node.props.placeholder ?? '')}
-                    aria-describedby={help ? node.key + '-help' : undefined}
-                    onChange={(event) => setValue(event.currentTarget.value)}
-                />
-                {help && <p id={node.key + '-help'} className="text-muted-foreground text-xs">{help}</p>}
-            </div>
-        );
-    }
+    const { Card, CardContent } = primitives;
 
     function ShadcnCard({ children }: UiComponentProps) {
         return (
@@ -143,14 +104,13 @@ export function createShadcnKit(primitives: ShadcnPrimitives): UiKitDefinition {
         id: 'shadcn',
         shell: ShadcnPageShell,
         components: {
-            'text-input': ShadcnTextInput,
-            'card': ShadcnCard,
+            ...createShadcnFields(primitives),
+            form: createShadcnForm(primitives),
+            action: createShadcnAction(primitives),
+            card: ShadcnCard,
             'page-header': ShadcnPageHeader,
         },
-        // The initial kit intentionally reuses tested default renderers
-        // for Tables, Actions and fields not yet migrated to shadcn.
+        // Table and other incomplete components intentionally retain tested default implementations.
         fallback: 'default',
     };
 }
-
-export type { UiComponentProps, UiShellProps, ReactNode };
