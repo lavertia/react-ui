@@ -64,3 +64,7 @@ The registry is application-scoped and should be built once at module scope. Fut
 ## UI Kit ownership
 
 Shadcn's canonical code, tests and CI migrated from the former `packages/ui-shadcn/` staging directory into [lavertia/ui-shadcn](https://github.com/lavertia/ui-shadcn) (PR #1). This runtime exports CSS-free `@lavertia/react-ui/form-submission` and `@lavertia/react-ui/table-state` for external UI Kits; it does **not** depend on Shadcn.
+
+## CSS-free registry import for SSR and external UI Kit test consumers
+
+The `@lavertia/react-ui/registry` subpath exports `createUiRegistry`, `UiRegistryProvider` and related types without importing Page CSS. Use it in Node SSR/packaging fixtures and external UI Kit integration tests. For browser Pages, keep the normal `@lavertia/react-ui` entry and its theme stylesheet.

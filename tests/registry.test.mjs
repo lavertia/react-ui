@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createUiRegistry } from '../dist/registry.js';
+import { createUiRegistry } from '@lavertia/react-ui/registry';
 
 const custom = () => null;
 const other = () => null;
