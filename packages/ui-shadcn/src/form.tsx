@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { translate } from '@lavertia/ui';
 import type { UiComponentProps } from '@lavertia/react-ui';
-import { useFormSubmission } from '@lavertia/react-ui';
+import { useFormSubmission } from '@lavertia/react-ui/form-submission';
 import type { ShadcnPrimitives } from './primitives.js';
 
 /** Reuse Inertia actions from Lavertia; presentation belongs to the Kit. */
