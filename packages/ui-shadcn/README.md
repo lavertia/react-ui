@@ -10,7 +10,7 @@ This is an independent npm package staged under `lavertia/react-ui/packages/ui-s
 - `@lavertia/ui` owns component protocol and validated theme tokens.
 - The Laravel app owns the actual shadcn **open-code** primitives (following shadcn's own philosophy).
 - This adapter receives the components by dependency injection. It never accesses host `@/` aliases from `node_modules` and never bundles shadcn vendor source.
-- `createShadcnKit()` returns an ordinary `UiKitDefinition`, with a separate full-page Shell, Cards, TextInputs and PageHeaders. Missing components explicitly reuse the default tested renderer.
+- `createShadcnKit()` returns an ordinary `UiKitDefinition`, with a separate full-page Shell, Cards, Form, TextInput, Textarea, Checkbox, Select, PageHeader and navigation Actions. The Table, advanced inputs and other unavailable components explicitly reuse the default tested renderer.
 
 ## Laravel React Starter Kit usage
 
@@ -18,7 +18,7 @@ Use an already configured Laravel React/Inertia Starter Kit. To install its shad
 
 ```sh
 npx shadcn@latest init
-npx shadcn@latest add card input label
+npx shadcn@latest add card input label textarea checkbox button
 ```
 
 While this prototype lives in a nested Git repository package:
@@ -40,10 +40,13 @@ import { createShadcnKit } from '@lavertia/ui-shadcn';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import type { LavertiaPayload } from '@lavertia/ui';
 
 const registry = createUiRegistry().registerKit(createShadcnKit({
-    Input, Label, Card, CardContent,
+    Input, Label, Textarea, Checkbox, Button, Card, CardContent,
 }));
 
 export default function Page({ lavertia }: { lavertia: LavertiaPayload }) {
@@ -71,6 +74,14 @@ Run `npm run build`; **do not** use `php artisan lavertia:install --force` over 
 ## Future work
 
 - Move to dedicated `lavertia/ui-shadcn` repository and tag immutable npm versions.
-- Complete shadcn Table/Form/Select/Dialog/Action renderers, a11y and visual QA.
+- Complete a native shadcn Table renderer, dialog primitives, advanced field adapters and visual/accessibility QA.
 - Add install-time Kit selection and automatic registry scaffolding when packages are stable.
 - Add standalone Marketing/Auth presets and navigation variants without assuming Panels.
+
+## Select adapter and link styles
+
+The kit supports `SelectControl` as an **optional application-supplied adapter**. Shadcn's Radix and Base UI Select controls are compound components, not HTML `<select>` elements. Without an adapter, the kit renders a styled, accessible native `<select>` that submits normally. An adapter receives `id`, `value`, `options`, `required`, `disabled`, and `onValueChange`; the kit submits its state through exactly one hidden `name=value` input. **Ensure the visual control supports keyboard and focus handling in the host.**
+
+For links, optionally pass `buttonClassName: (variant) => buttonVariants({ variant })` from the host application's shadcn button utilities; using an `asChild` prop is intentionally avoided so both shadcn primitive families can work with Inertia's `Link`.
+
+The Form uses Lavertia's shared `useFormSubmission` hook for POST/PUT/PATCH and Laravel validation feedback. React UI and Shadcn Kit must be installed from compatible revisions. Client validation and hidden buttons are never a substitute for backend Policies, CSRF and tenant-scoped queries.
